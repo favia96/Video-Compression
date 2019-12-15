@@ -11,24 +11,24 @@ video_height = 144;
 frame_size = [video_width, video_height];
 fps = 30;
 number_frames = 50;
-frames = yuv_import_y('foreman_qcif.yuv',frame_size,number_frames);
+frames = yuv_import_y('foreman_qcif.yuv',frame_size,number_frames); % Import luminance of the video
 
 uniform_quantizer = @(x,ssize) round(x/ssize)*ssize;
 block_size = 8;
-steps = 2.^[3:1:6];
+block = 16;
+steps = 2.^(3:6);
 
 [recon_frames, enc_dct16, enc_dct16_quan] = intra_coding(frames,steps,frame_size,block_size);
-[psnr_intra, bitrates] = intra_eval(frames,video_height,video_width,recon_frames,enc_dct16_quan,steps,block_size,fps);
+[psnr_intra, bitrates] = intra_eval(frames,video_height,video_width,recon_frames,enc_dct16_quan,steps,block,block_size,fps);
 
 figure('name','Intra-frame coding 1st frame');
 subplot(1,3,1); imshow(uint8(frames{1})); title('Original Frame');
 subplot(1,3,2); imshow(uint8(frames{1})); title('Frame with quantization step 16');
 subplot(1,3,3); imshow(uint8(frames{1})); title('Frame with quantization step 64');
-sgtitle('Intra-frame coding 1st frame');
+sgtitle(sprintf('Intra-frame coding video step=%.f',steps(2)));
 
-figure('name','Intra-frame coding video');
+% show reconstructed video
 implay(uint8(reshape(cell2mat(recon_frames(2,:)),video_height,video_width,number_frames)),fps);
-title(sprintf('Intra-frame coding video step=%.f',steps(2)));
 
 %% Part 2: Intra-frame and Conditional replenishment coding
 lagrangian = @(n,q,r) n+0.2*(q^2)*r; %lambda = 0.2*(q^2);

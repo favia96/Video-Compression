@@ -1,6 +1,5 @@
-function [psnr_intra,bitrates] = intra_eval(frames,video_height,video_width,recon_frames,coeff,steps,block_size,fps)
+function [psnr_intra,bitrates] = intra_eval(frames,video_height,video_width,recon_frames,coeff,steps,block,block_size,fps)
     
-    block = 16;
     hist_intra = zeros(length(steps),length(frames),block_size,block_size,video_height/block,video_width/block,4);
     
     for i = 1 : length(steps)
@@ -39,7 +38,7 @@ function [psnr_intra,bitrates] = intra_eval(frames,video_height,video_width,reco
     bitrates = sum(bitrates,4);
     bitrates = sum(bitrates,3);
     %bitrates = bitrates./256;
-    bitrates = bitrates*9*11*4;
+    bitrates = bitrates*(video_height/block)*(video_width/block)*4;
     bitrates = sum(bitrates,2)/length(frames);
     bitrates = bitrates*fps/1000;
 
