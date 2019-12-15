@@ -1,0 +1,33 @@
+function [psnr_intra,bitrates]=intra_eval(frames,recon_frames,coeff,steps)
+hist_intra=zeros(length(steps),length(frames),16,16,9,11);
+for i=1:length(steps)
+    for j=1:length(frames)
+        psnr_intra(i,j)=my_mse(recon_frames{i,j},frames{j});
+        %psnr_intra=my_psnr(psnr_intra);
+        for index1=1:9
+            for index2=1:11
+                hist_intra(i,j,:,:,index1,index2)=coeff{i,j}{index1,index2};
+            end
+        end
+    end
+end
+bitarates=zeros(length(steps),length(frames),);
+for i=1:length(steps)
+    for j=1:length(frames)
+        for index1=1:16
+             for index2=1:16
+                 prob=hist(hist_intra(i,j,index1,index2,:,:));
+                 prob=prob./sum(prob,2);
+             end
+        end
+    end
+end
+hist_intra=hist(cell2mat(coeff{i,j}));
+prob=hist_intra/sum(hist_intra);
+bitrates(i,j)=-sum(prob.*log2(prob+eps));
+
+psnr_intra=sum(psnr_intra,2)/length(frames);
+psnr_intra=my_psnr(psnr_intra);
+bitrates=sum(bitrates,2);
+bitrates=bitrates*30/50;
+end
