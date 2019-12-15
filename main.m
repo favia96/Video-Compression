@@ -9,8 +9,13 @@ frames=yuv_import_y('foreman_qcif.yuv',frame_size,50);
 %imagesc(video1{1})
 steps=[2^3,2^4,2^5,2^6];
 [recon_frames,enc_dct16]=intra_coding(frames,steps,frame_size);
-[psnr_intra1,bitrates]=intra_eval(frames,recon_frames,enc_dct16_quan,steps);
-
+[psnr_intra,bitrates]=intra_eval(frames,recon_frames,enc_dct16_quan,steps);
+figure;
+%% Plot
+subplot(1,3,1); imshow(uint8(frames{1})); title('Original Frame');
+subplot(1,3,2); imshow(uint8(frames{1})); title('Frame with quantization step 16');
+subplot(1,3,3); imshow(uint8(frames{1})); title('Frame with quantization step 64');
+%% 
 
 
 
